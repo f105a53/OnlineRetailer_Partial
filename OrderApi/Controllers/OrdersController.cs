@@ -49,7 +49,7 @@ namespace OrderApi.Controllers
             RestClient c = new RestClient();
             // You may need to change the port number in the BaseUrl below
             // before you can run the request.
-            c.BaseUrl = new Uri("https://product-api/api/products/");
+            c.BaseUrl = new Uri("http://product-api/api/products/");
             var request = new RestRequest(order.ProductId.ToString(), Method.GET);
             var response = c.Execute<Product>(request);
             var orderedProduct = response.Data;
