@@ -4,5 +4,7 @@ services:
     build: ProductApi
   order-api:
     build: OrderApi
+    ports:
+      - "5000:80"
   customer-api:
     build: CustomerApi
