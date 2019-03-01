@@ -1,0 +1,8 @@
+version: "2"
+services:
+  product-api:
+    build: ProductApi
+  order-api:
+    build: OrderApi
+  customer-api:
+    build: CustomerApi
