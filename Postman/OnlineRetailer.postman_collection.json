@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "164c031e-7428-497d-9cf8-804007f244e6",
+		"_postman_id": "61576fe4-8f70-4ce5-b9b1-1491b3880e80",
 		"name": "OnlineRetailer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -177,12 +177,12 @@
 					"raw": "{\n    \"productId\": 3,\n    \"quantity\": 1\n}\n"
 				},
 				"url": {
-					"raw": "http://localhost:32794/api/orders",
+					"raw": "http://localhost:5002/api/orders",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "32794",
+					"port": "5002",
 					"path": [
 						"api",
 						"orders"
