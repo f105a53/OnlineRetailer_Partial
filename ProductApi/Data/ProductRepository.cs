@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using ProductApi.Models;
+using MessageFramework.Models;
 
 namespace ProductApi.Data
 {
@@ -23,7 +23,7 @@ namespace ProductApi.Data
 
         void IRepository<Product>.Edit(Product entity)
         {
-            db.Entry(entity).State = EntityState.Modified;
+            db.Products.Update(entity);
             db.SaveChanges();
         }
 

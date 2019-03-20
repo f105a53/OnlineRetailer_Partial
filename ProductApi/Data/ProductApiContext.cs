@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProductApi.Models;
+﻿using MessageFramework.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductApi.Data
 {

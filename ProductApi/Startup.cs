@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApi.Data;
+using ProductApi.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace ProductApi
 {
@@ -34,6 +36,13 @@ namespace ProductApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton(RabbitHutch.CreateBus("amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
+
+            services.AddScoped<MessageHandler>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "ProductAPI", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,8 +68,16 @@ namespace ProductApi
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.ApplicationServices.CreateScope().ServiceProvider.GetService<MessageHandler>();
         }
     }
 }

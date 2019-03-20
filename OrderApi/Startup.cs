@@ -1,4 +1,5 @@
 ﻿using EasyNetQ;
+using MessageFramework.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderApi.Data;
-using OrderApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace OrderApi
 {
@@ -34,6 +35,11 @@ namespace OrderApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton(RabbitHutch.CreateBus("amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "OrderAPI", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +67,11 @@ namespace OrderApi
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
         }
     }
 }
