@@ -51,7 +51,7 @@ namespace OrderApi.Controllers
 
             var orderedProduct = bus.RequestAsync<ProductRequest, Product>(new ProductRequest(){ProductId=order.ProductId);
 
-            if (order.Quantity <= orderedProduct.ItemsInStock)
+            if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
             {
                 // reduce the number of items in stock for the ordered product,
                 // and create a new order.
