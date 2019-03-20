@@ -54,7 +54,7 @@ namespace OrderApi.Controllers
             var response = c.Execute<Product>(request);
             var orderedProduct = response.Data;
 
-            if (order.Quantity <= orderedProduct.ItemsInStock)
+            if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
             {
                 // reduce the number of items in stock for the ordered product,
                 // and create a new order.
