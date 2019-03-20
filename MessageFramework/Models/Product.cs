@@ -1,5 +1,5 @@
 ﻿using System;
-namespace OrderApi.Models
+namespace MessageFramework.Models
 {
     public class Product
     {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using EasyNetQ;
+using MessageFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Models;
@@ -11,9 +13,11 @@ namespace OrderApi.Controllers
     public class OrdersController : Controller
     {
         private readonly IRepository<Order> repository;
+        private readonly IBus bus;
 
-        public OrdersController(IRepository<Order> repos)
+        public OrdersController(IRepository<Order> repos, IBus bus)
         {
+            this.bus = bus;
             repository = repos;
         }
 
@@ -45,14 +49,7 @@ namespace OrderApi.Controllers
                 return BadRequest();
             }
 
-            // Call ProductApi to get the product ordered
-            RestClient c = new RestClient();
-            // You may need to change the port number in the BaseUrl below
-            // before you can run the request.
-            c.BaseUrl = new Uri("http://product-api/api/products/");
-            var request = new RestRequest(order.ProductId.ToString(), Method.GET);
-            var response = c.Execute<Product>(request);
-            var orderedProduct = response.Data;
+            var orderedProduct = bus.RequestAsync<ProductRequest, Product>(new ProductRequest(){ProductId=order.ProductId);
 
             if (order.Quantity <= orderedProduct.ItemsInStock)
             {

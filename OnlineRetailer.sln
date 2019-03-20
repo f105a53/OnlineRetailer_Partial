@@ -6,7 +6,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApi", "ProductApi\Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderApi", "OrderApi\OrderApi.csproj", "{49B688E9-31B4-4F04-96FF-34032E70CF54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomerApi", "CustomerApi\CustomerApi.csproj", "{29C7669E-8040-45CF-9DC0-D03EC49FFBBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerApi", "CustomerApi\CustomerApi.csproj", "{29C7669E-8040-45CF-9DC0-D03EC49FFBBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageFramework", "MessageFramework\MessageFramework.csproj", "{36AE16E6-A102-48B8-BFE5-EAFE3C599B10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{29C7669E-8040-45CF-9DC0-D03EC49FFBBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29C7669E-8040-45CF-9DC0-D03EC49FFBBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29C7669E-8040-45CF-9DC0-D03EC49FFBBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36AE16E6-A102-48B8-BFE5-EAFE3C599B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36AE16E6-A102-48B8-BFE5-EAFE3C599B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36AE16E6-A102-48B8-BFE5-EAFE3C599B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36AE16E6-A102-48B8-BFE5-EAFE3C599B10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@
 using System.Linq;
 using OrderApi.Models;
 using System;
+using MessageFramework.Models;
 
 namespace OrderApi.Data
 {
