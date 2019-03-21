@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CustomerApi.Models;
 using System;
+using MessageFramework.Models;
 
 namespace CustomerApi.Data
 {

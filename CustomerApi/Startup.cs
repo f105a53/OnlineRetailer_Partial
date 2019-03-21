@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CustomerApi.Data;
-using CustomerApi.Models;
+using CustomerApi.Services;
 using EasyNetQ;
+using MessageFramework.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -44,6 +45,8 @@ namespace CustomerApi
 
             services.AddSingleton(RabbitHutch.CreateBus("amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
 
+            services.AddScoped<MessageHandler>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "CustomerAPI", Version = "v1" });
@@ -80,6 +83,8 @@ namespace CustomerApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            app.ApplicationServices.CreateScope().ServiceProvider.GetService<MessageHandler>();
         }
     }
 }

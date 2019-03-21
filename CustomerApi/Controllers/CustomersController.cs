@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using CustomerApi.Data;
-using CustomerApi.Models;
+using MessageFramework.Models;
 
 namespace CustomerApi.Controllers
 {
