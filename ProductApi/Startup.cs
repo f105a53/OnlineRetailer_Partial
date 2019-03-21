@@ -24,7 +24,8 @@ namespace ProductApi
         public void ConfigureServices(IServiceCollection services)
         {
             // In-memory database:
-            services.AddDbContext<ProductApiContext>(opt => opt.UseInMemoryDatabase("ProductsDb").EnableSensitiveDataLogging());
+            services.AddDbContext<ProductApiContext>(opt =>
+                opt.UseInMemoryDatabase("ProductsDb").EnableSensitiveDataLogging());
 
             // Register repositories for dependency injection
             services.AddScoped<IRepository<Product>, ProductRepository>();
@@ -34,12 +35,10 @@ namespace ProductApi
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSingleton(RabbitHutch.CreateBus("amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
+            services.AddSingleton(RabbitHutch.CreateBus(
+                "amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "ProductAPI", Version = "v1" });
-            });
+            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new Info {Title = "ProductAPI", Version = "v1"}); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,40 +68,35 @@ namespace ProductApi
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
 
             var bus = app.ApplicationServices.GetService<IBus>();
-            
-                bus.Respond<ProductRequest, Product>(req =>
+
+            bus.Respond<ProductRequest, Product>(req =>
+            {
+                using (var serviceScope = app.ApplicationServices.CreateScope())
                 {
-                    using (var serviceScope = app.ApplicationServices.CreateScope())
-                    {
-                        var repository = serviceScope.ServiceProvider.GetService<IRepository<Product>>();
-                        return repository.Get(req.ProductId);
-                    }
-                });
-                bus.Respond<Product, ProductResponse>(req =>
+                    var repository = serviceScope.ServiceProvider.GetService<IRepository<Product>>();
+                    return repository.Get(req.ProductId);
+                }
+            });
+            bus.Respond<Product, ProductResponse>(req =>
+            {
+                try
                 {
-                    //try
-                    //{
                     using (var serviceScope = app.ApplicationServices.CreateScope())
                     {
                         var repository = serviceScope.ServiceProvider.GetService<IRepository<Product>>();
                         repository.Edit(req);
                     }
-                    //}
-                    //catch
-                    //{
-                    //    return new ProductResponse {IsSuccessful = false};
-                    //}
+                }
+                catch
+                {
+                    return new ProductResponse {IsSuccessful = false};
+                }
 
-                    return new ProductResponse { IsSuccessful = true };
-                });
-            
-            
+                return new ProductResponse {IsSuccessful = true};
+            });
         }
     }
 }
