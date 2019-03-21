@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApi.Data;
-using ProductApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ProductApi
@@ -25,7 +24,7 @@ namespace ProductApi
         public void ConfigureServices(IServiceCollection services)
         {
             // In-memory database:
-            services.AddDbContext<ProductApiContext>(opt => opt.UseInMemoryDatabase("ProductsDb"));
+            services.AddDbContext<ProductApiContext>(opt => opt.UseInMemoryDatabase("ProductsDb").EnableSensitiveDataLogging());
 
             // Register repositories for dependency injection
             services.AddScoped<IRepository<Product>, ProductRepository>();
@@ -36,8 +35,6 @@ namespace ProductApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton(RabbitHutch.CreateBus("amqp://styjxehb:SfZDHmtVwzdfYxFSHynoLXyeRltIC320@bullfrog.rmq.cloudamqp.com/styjxehb"));
-
-            services.AddScoped<MessageHandler>();
 
             services.AddSwaggerGen(c =>
             {
@@ -77,7 +74,35 @@ namespace ProductApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.ApplicationServices.CreateScope().ServiceProvider.GetService<MessageHandler>();
+            var bus = app.ApplicationServices.GetService<IBus>();
+            
+                bus.Respond<ProductRequest, Product>(req =>
+                {
+                    using (var serviceScope = app.ApplicationServices.CreateScope())
+                    {
+                        var repository = serviceScope.ServiceProvider.GetService<IRepository<Product>>();
+                        return repository.Get(req.ProductId);
+                    }
+                });
+                bus.Respond<Product, ProductResponse>(req =>
+                {
+                    //try
+                    //{
+                    using (var serviceScope = app.ApplicationServices.CreateScope())
+                    {
+                        var repository = serviceScope.ServiceProvider.GetService<IRepository<Product>>();
+                        repository.Edit(req);
+                    }
+                    //}
+                    //catch
+                    //{
+                    //    return new ProductResponse {IsSuccessful = false};
+                    //}
+
+                    return new ProductResponse { IsSuccessful = true };
+                });
+            
+            
         }
     }
 }

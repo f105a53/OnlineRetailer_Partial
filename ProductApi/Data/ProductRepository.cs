@@ -23,7 +23,7 @@ namespace ProductApi.Data
 
         void IRepository<Product>.Edit(Product entity)
         {
-            db.Products.Update(entity);
+            db.Entry(entity).State=EntityState.Modified;
             db.SaveChanges();
         }
 
