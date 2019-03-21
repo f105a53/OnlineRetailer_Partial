@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using CustomerApi.Models;
 using System;
+using MessageFramework.Models;
 
 namespace CustomerApi.Data
 {

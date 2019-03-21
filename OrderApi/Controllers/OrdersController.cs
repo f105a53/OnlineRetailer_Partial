@@ -40,47 +40,100 @@ namespace OrderApi.Controllers
             return new ObjectResult(item);
         }
 
+        // GET api/products/5
+        [HttpGet("{customerId}", Name = "GetOrdersByCustomer")]
+        public IEnumerable<Order> GetOrdersByCustomer(int customerId)
+        {
+            var orders = repository.GetAll();
+
+            Stack<Order> orderByCustomer = new Stack<Order>();
+
+            foreach (Order order in orders)
+            {
+                if (order.CustomerId == customerId)
+                {
+                    orderByCustomer.Push(order);
+                }
+            }
+
+            if (orderByCustomer.Count == 0)
+                return null;
+
+            return orderByCustomer;
+        }
+
         // POST api/orders
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Order order)
+        public async Task<IActionResult> Post([FromBody]Order order, Customer customer)
         {
             if (order == null)
             {
                 return BadRequest();
             }
 
-            var orderedProduct = await bus.RequestAsync<ProductRequest, Product>(new ProductRequest() { ProductId = order.ProductId });
-
-            if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
+            if (customer == null)
             {
-                orderedProduct.ItemsReserved += order.Quantity;
-
-                var updateProductRequest = await bus.RequestAsync<Product, ProductResponse>(orderedProduct);
-
-                if (updateProductRequest.IsSuccessful) {
-                    var newOrder = repository.Add(order);
-                    return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-                }
+                return BadRequest();
             }
 
 
-            //if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
-            //{
-            //    // reduce the number of items in stock for the ordered product,
-            //    // and create a new order.
-            //    orderedProduct.ItemsReserved += order.Quantity;
-            //    var updateRequest = new RestRequest(orderedProduct.Id.ToString(), Method.PUT);
-            //    updateRequest.AddJsonBody(orderedProduct);
-            //    var updateResponse = c.Execute(updateRequest);
+            var customerMessage = await bus.RequestAsync<Customer, CustomerResponse>(customer);
 
-            //    if (updateResponse.IsSuccessful)
-            //    {
-            //        var newOrder = repository.Add(order);
-            //        return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-            //    }
-            //}
+            if (customerMessage.customer != null)
+            {
+                customer = customerMessage.customer;
+                if (customerMessage.IsSuccessful)
+                {
+                    if (customer.creditStanding == Credit.GOOD)
+                    {
+                        IEnumerable<Order> orders = GetOrdersByCustomer(customer.customerId);
 
-            // If the order could not be created, "return no content".
+                        bool paidOrders = true;
+
+                        foreach (Order item in orders)
+                        {
+                            if (item.PaymentStatus == PaymentStatus.UNPAID)
+                            {
+                                paidOrders = false;
+                            }
+                        }
+
+                        if (paidOrders)
+                        {
+                            foreach (OrderProduct orderProduct in order.Products)
+                            {
+                                var orderedProduct = await bus.RequestAsync<ProductRequest, Product>(new ProductRequest() { ProductId = orderProduct.Product.Id });
+
+                                if (orderProduct.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
+                                {
+                                    orderedProduct.ItemsReserved += orderProduct.Quantity;
+
+                                    var updateProductRequest = await bus.RequestAsync<Product, ProductResponse>(orderedProduct);
+
+                                    if (!updateProductRequest.IsSuccessful)
+                                        return CreatedAtRoute(new { message = string.Format("There are not enough in stock of {0}", orderProduct.Product.Name) }, null);
+                                }
+
+                            }
+
+                            var newOrder = repository.Add(order);
+                            return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
+
+
+                        }
+                        else
+                            return CreatedAtRoute(new { message = "You have an unpaid order" }, null);
+
+                    }
+                    else
+                        return CreatedAtRoute(new { message = "Bad credit" }, null);
+
+                }
+                else
+                    return CreatedAtRoute(new { message = "Customer do not exist" }, null);
+
+            }
+
             return NoContent();
         }
 
