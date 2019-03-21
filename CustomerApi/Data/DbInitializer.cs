@@ -21,7 +21,7 @@ namespace CustomerApi.Data
 
             List<Customer> customers = new List<Customer>
             {
-                new Customer { customerId = 1, name = "John Hitler", email = "hitler@nazi.de", phone = 88888888, billingAddress = "berlin strasse 2, berlin", shippingAddress = "berlin strasse 2, berlin", creditStanding = "AAA" }
+                new Customer { customerId = 1, name = "John Hitler", email = "hitler@nazi.de", phone = 88888888, billingAddress = "berlin strasse 2, berlin", shippingAddress = "berlin strasse 2, berlin", creditStanding = Credit.GOOD }
             };
 
             context.Customers.AddRange(customers);
